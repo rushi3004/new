@@ -1,15 +1,22 @@
 
-const multer = require('multer');
-const {GridFsStorage} = require('multer-gridfs-storage') 
+const multer  = require('multer')
+const {GridFsStorage} = require('multer-gridfs-storage');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
 
 const storage = new GridFsStorage({
-    url: `mongodb://user:codeforinterview@blogweb-shard-00-00.ch1hk.mongodb.net:27017,blogweb-shard-00-01.ch1hk.mongodb.net:27017,blogweb-shard-00-02.ch1hk.mongodb.net:27017/BLOG?ssl=true&replicaSet=atlas-lhtsci-shard-0&authSource=admin&retryWrites=true&w=majority`,
+    url:`mongodb+srv://${username}:${password}@cluster0.07chum3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
     options: { useNewUrlParser: true },
-    file: (request, file) => {
+    file: (request,file) => {
         const match = ["image/png", "image/jpg"];
 
-        if(match.indexOf(file.memeType) === -1) 
-            return`${Date.now()}-blog-${file.originalname}`;
+        if(match.indexOf(file.mimeType) === -1) 
+            return `${Date.now()}-blog-${file.originalname}`;
 
         return {
             bucketName: "photos",
@@ -18,5 +25,6 @@ const storage = new GridFsStorage({
     }
 });
 
+const upload = multer({storage})
+module.exports = upload;
 
-module.exports = multer({storage})

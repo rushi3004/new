@@ -1,30 +1,34 @@
 const express = require('express');
-const {uploadImage} = require('../Controller/image-upload.js');
-const {  authenticateToken, createNewToken } = require('../Controller/jwt-controller.js');
-const { singupUser, loginUser, logoutUser } = require('../Controller/user-controller.js');
-const upload = require('../utils/upload.js');
+const mongoose = require('mongoose');
 
+// const { uploadImage } = require('../Controller/image-controller.js');
+const { singupUser, loginUser } = require('../Controller/user-controller.js');
+const uploads = require('../Controller/image-controller.js')
+const multer = require('multer')
+require("../Models/image-details.js");
+const Images = mongoose.model("ImageDetail");
 const router = express.Router();
 
+// const storage = multer.diskStorage({
+//     destination: 'backend/photos/',
+//     filename: (req, file, cb) => {
+//         cb(null, file.originalname); // Use file.originalname to set the filename
+//     }
+// });
+
+// let uploads = multer({
+//     storage:storage
+// })
 router.post('/login', loginUser);
 router.post('/signup', singupUser);
-router.post('/logout', logoutUser);
+router.post('/file/upload',uploads.single('image'),async (req,res) => {
+    console.log('request', req.body);
+    try {
+        await Images.create({image:imageName})
+        res.json({status:imageName})
+    }catch(error){
+        res.json({status:error})
+    }
+    });
 
-router.post('/token', createNewToken);
-
-// router.post('/create', authenticateToken, createPost);
-// router.put('/update/:id', authenticateToken, updatePost);
-// router.delete('/delete/:id', authenticateToken, deletePost);
-
-// router.get('/post/:id', authenticateToken, getPost);
-// router.get('/posts', authenticateToken, getAllPosts);
-
-router.post('/file/upload', upload.single('file'), uploadImage);
-// router.get('/file/:filename', getImage);
-
-// router.post('/comment/new', authenticateToken, newComment);
-// router.get('/comments/:id', authenticateToken, getComments);
-// router.delete('/comment/delete/:id', authenticateToken, deleteComment);
-
-
- module.exports = router;
+module.exports = router;
