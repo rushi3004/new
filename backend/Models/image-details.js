@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const ImageDetailsScehma = new mongoose.Schema(
+ 
   {
-   image:String
+  image:String
   },
   {
-    collection: "ImageDetail",
+    collection: "uploadImage",
   }
 );
 
-mongoose.model("ImageDetail", ImageDetailsScehma);
+mongoose.model("uploadImage", ImageDetailsScehma);

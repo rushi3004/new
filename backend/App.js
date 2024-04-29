@@ -10,13 +10,15 @@ const Router = require('./Routes/route.js')
 dotenv.config();
 
 const app = express();
-
+app.use(express.json())
 app.use(cors());
 app.use(bodyParser.json({extended:true}));
 app.use(bodyParser.urlencoded({extended:true}))
-app.use(express.json())
 app.use('/',  Router);
-
+// app.use(cors({
+//     origin: 'http://localhost:3000'
+//   }));
+  
 
 const PORT = 5000;
 const username = process.env.DB_USERNAME;

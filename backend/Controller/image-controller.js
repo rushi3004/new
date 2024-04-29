@@ -1,15 +1,5 @@
-
-
-const dotenv = require('dotenv');
-
-dotenv.config();
-
-const username = process.env.DB_USERNAME;
-const password = process.env.DB_PASSWORD;
-
-const multer = require('multer')
-
-const mongourl = `mongodb+srv://${username}:${password}@cluster0.07chum3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const Images = require('../Models/image-details');
+const multer = require("multer");
 
 const storage = multer.diskStorage({
     destination: function(req,file,cb){
@@ -22,8 +12,19 @@ const storage = multer.diskStorage({
     }
 })
 
-const uploads = multer({storage:storage})
+const uploadfile = async (req, res) => {
+    console.log(req.body);
+    const {base64} = req.body
+    try {
+        await Images.create({ image: base64 }); // Saving name and picture to MongoDB
+        const imageUrl = `${url}/file/${base64}`;
+        return res.status(200).json({"imageurl":imageUrl,"imageData":base64});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: "Error uploading file" });
+    }
+}
 
-module.exports = uploads;
+const upload = multer({ storage: storage });
 
-
+module.exports = {upload,uploadfile};

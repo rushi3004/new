@@ -35,7 +35,7 @@ const authenticateToken = (request, response, next) => {
         return response.status(404).json({ msg: 'Refresh token is not valid'});
     }
 
-    jwt.verify(token.token, process.env.REFRESH_SECRET_KEY, (error, user) => {
+    jwt.verify(token.token, process.env.REFREASH_SECRET_KEY, (error, user) => {
         if (error) {
             response.status(500).json({ msg: 'invalid refresh token'});
         }
