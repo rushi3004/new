@@ -4,19 +4,8 @@ const dotenv = require('dotenv');
 const Token = require('../Models/token.js');
 const User = require('../Models/User.js');
 const nodemailer = require('nodemailer')
-
+const Joi = require('joi');
 dotenv.config();
-
-// const transporter = nodemailer.createTransport({
-//     service: 'Gmail',
-//     auth: {
-//         user: "rushipatel8603@gmail.com",
-//         pass: "Rushipatel@8603"
-//     },
-//     tls: {
-//         rejectUnauthorized: false
-//     }
-// });
 
 var transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
@@ -27,17 +16,39 @@ var transporter = nodemailer.createTransport({
     }
   });
 
+  const schema = Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).required(),
+    fullname: Joi.string().trim().min(3).max(30).required(),
+    Bio: Joi.string().trim().min(10).max(1000).required(),
+    interest:Joi.required(),
+    email: Joi.string().email().required(),
+    profilePic: Joi.string(),
+    password: Joi.string().min(6).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*()\\-_+=[\\]{}|:;”,.<>?]{6,30}$')).required(),
+});
+
+
 const singupUser = async (request, response) => {
     console.log(request.body);
     try {
+
+        const { error } = schema.validate(request.body);
+        
+        if (error) {
+            return response.status(400).json({ msg: error.details[0].message });
+        }
+
         const saltround = 10
         const salt = await bcrypt.genSalt(saltround);
         const hashedPassword = await bcrypt.hash(request.body.password, salt);
 
         const newUser = new User({
             username: request.body.username,
+            fullname:request.body.fullname,
             email: request.body.email,
-            password: hashedPassword
+            Bio:request.body.Bio,
+            profilePic:request.body.profilePic,
+            interest:request.body.interest,
+            password: hashedPassword,
         });
 
         await newUser.save();
@@ -101,4 +112,22 @@ const loginUser = async (request, response) => {
     response.status(204).json({ msg: 'logout successfull' });
 }
 
-module.exports ={ singupUser,loginUser,logoutUser};
+
+const updateuser = async(req,res) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if(!user){
+            return res.status(400).json({msg:'User not found'})
+        }
+        await User.findByIdAndUpdate(req.params.id, {$set:req.body}).select("-password")
+
+        return res.status(200).json({msg:'Successfully updated'})
+    } catch (error) {
+        return res.status(500).json({msg:"user not updated",error})
+    }
+}
+
+module.exports ={ singupUser,loginUser,logoutUser,updateuser};
+
+

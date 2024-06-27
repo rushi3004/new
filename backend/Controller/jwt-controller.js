@@ -43,8 +43,6 @@ const authenticateToken = (request, response, next) => {
 
         return response.status(200).json({ accessToken: accessToken })
     })
-
-
 }
 
 module.exports = {authenticateToken,createNewToken};

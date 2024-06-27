@@ -12,11 +12,27 @@ const userSchema =new  mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
-    }
+        required: true,
+        minLength:6
+    },
+    fullname:{
+        type:String,
+        required:true
+        
+    },
+    profilePic :{
+        type:String,
+    },
+    Bio:{
+        type:String,
+        required:true,
+        minLength:10
+    } ,
+     interest: {
+        type: [String],
+        enum: ['Music', 'Movies', 'Sports', 'Art', 'Technology']
+    },
 });
-
-
 
 
 const User = mongoose.model("user",userSchema);

@@ -11,6 +11,8 @@ const User = require('../Models/User.js');
                 return res.send({Status: "User not existed"})
             } 
             const token = jwt.sign({id: user._id}, process.env.ACCESS_SECRET_KEY, {expiresIn: "1d"})
+            console.log("token",token);
+            
             var transporter = nodemailer.createTransport({
                 host: "sandbox.smtp.mailtrap.io",
                 port: 2525,
@@ -37,22 +39,4 @@ const User = require('../Models/User.js');
         })
     }
 
-    const reset_password = (req, res) => {
-        const {id, token} = req.params
-        const {password} = req.body
-    
-        jwt.verify(token,  process.env.ACCESS_SECRET_KEY, (err, decoded) => {
-            if(err) {
-                return res.json({Status: "Error with token"})
-            } else {
-                bcrypt.hash(password, 10)
-                .then(hash => {
-                    User.findByIdAndUpdate({_id: id}, {password: hash})
-                    .then(u => res.send({Status: "Success"}))
-                    .catch(err => res.send({Status: err}))
-                })
-                .catch(err => res.send({Status: err}))
-            }
-        })
-    }
-    module.exports = {forgot_password,reset_password};
+    module.exports = {forgot_password};

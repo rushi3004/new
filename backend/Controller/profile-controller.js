@@ -13,10 +13,23 @@ const Profile = async(req,res) =>{
 
 const UserPost = async(req,res) =>{
     try {
-        const post = await Post.find({username:req.params.username});
+        const post = await Post.find({username : req.params.username});
         return res.status(200).json(post)
     } catch (error) {
-        return res.status(500).json("No post display",error)
+        return res.status(500).json({msg:"No post display",error})
     }
 }
-module.exports = {Profile,UserPost}
+
+const userInfo = async(req,res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        return res.status(200).json({msg:"here is data",user})
+        
+    } catch (error) {
+        return res.status(500).json({msg:"No data found"})
+    }
+}
+
+
+
+module.exports = {Profile,UserPost,userInfo}
